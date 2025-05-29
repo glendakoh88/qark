@@ -75,7 +75,7 @@ class Decompiler(object):
         self.source_code = False
         self.apk_name = os.path.splitext(os.path.basename(path_to_source))[0]  # name of APK without the .apk extension
 
-        self.dex_path = self._unpack_apk()
+        self.dex_path = ""
         self.jar_path = self._run_dex2jar()
         self.manifest_path = self.run_apktool()
 
@@ -188,16 +188,16 @@ class Decompiler(object):
         If `self.dex_path` is None or empty it will run `_unpack_apk` to get a value for it.
         """
         # dex_path should always be set if being called through run
-        if not self.dex_path:
-            log.debug("Path to .dex file not found, unpacking APK")
-            self.dex_path = self._unpack_apk()
+        # if not self.dex_path:
+        #     log.debug("Path to .dex file not found, unpacking APK")
+        #     self.dex_path = self._unpack_apk()
 
         configure_dex2jar()
 
         dex2jar_command = escape_windows_path(DEX2JAR_COMMAND.format(dex2jar_path=os.path.join(DEX2JAR_PATH,
                                                                                                "d2j-dex2jar.{extension}".format(
                                                                                                    extension=DEX2JAR_EXTENSION)),
-                                                                     path_to_dex=self.dex_path,
+                                                                     path_to_apk=self.path_to_source,
                                                                      build_apk=os.path.join(self.build_directory,
                                                                                             self.apk_name)))
 
