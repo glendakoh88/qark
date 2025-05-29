@@ -37,6 +37,7 @@ class ImplicitIntentToPendingIntent(CoroutinePlugin):
         self.current_file = None
 
     def can_run_coroutine(self):
+        log.debug("checking for pending intents")
         # simple search to avoid files that are not vulnerable
         if re.search("new Intent", self.file_contents) is None or re.search(PENDING_INTENT_REGEX, self.file_contents) is None:
             return False
@@ -48,6 +49,7 @@ class ImplicitIntentToPendingIntent(CoroutinePlugin):
         return True
 
     def run_coroutine(self):
+
         while True:
             _, pending_intent_invocation = (yield)
 
@@ -61,6 +63,7 @@ class ImplicitIntentToPendingIntent(CoroutinePlugin):
                     if len(creation.arguments) in (0, 1):  # remove any intents created with arguments
                         for _, reference_declaration in creation.filter(ReferenceType):
                             if reference_declaration.name == "Intent":
+                                log.debug("pending intents found")
                                 self.issues.append(Issue(category=self.category, severity=self.severity,
                                                          name=self.name, description=self.description,
                                                          file_object=self.file_path))
